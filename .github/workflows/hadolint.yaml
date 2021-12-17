@@ -1,18 +1,19 @@
+---
 name: hadolint-CI
 on:
   push:
     branches:
-      - main
+    - main
   pull_request:
     branches:
-      - main
+    - main
 jobs:
   test:
     strategy:
       matrix:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
-    container: 
+    container:
       image: ixxel/unit-tests-alpine:latest
     steps:
     - name: Git clone repo
@@ -20,6 +21,6 @@ jobs:
     - name: Hadolint Dockerfile scan
       uses: ixxeL-actions/hadolint@main
       with:
-        format: 'json'
-        treshold: 'error'
-        working-dir: '.'
+        format: json
+        treshold: error
+        working-dir: .

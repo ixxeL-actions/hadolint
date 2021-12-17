@@ -1,53 +1,55 @@
-name: 'Hadolint'
-description: 'Scan Dockerfile with Hadolint'
-author: 'ixxeL'
+---
+name: Hadolint
+description: Scan Dockerfile with Hadolint
+author: ixxeL
 inputs:
   format:
-    description: 'The output format for the results [tty | json | checkstyle | codeclimate | gitlab_codeclimate | codacy | sonarqube | sarif]'
+    description: The output format for the results [tty | json | checkstyle | codeclimate | gitlab_codeclimate | codacy | sonarqube | sarif]
     required: false
-    default: 'json'
+    default: json
   treshold:
-    description: 'Exit with failure code only when rules with a severity equal to or above THRESHOLD are violated [error | warning | info | style | ignore | none]'
+    description: Exit with failure code only when rules with a severity equal to or above THRESHOLD are violated [error | warning | info | style | ignore
+      | none]
     required: false
-    default: 'error'
+    default: error
   working-dir:
-    description: 'directory in which to find the Dockerfile'
+    description: directory in which to find the Dockerfile
     required: false
-    default: '.'
+    default: .
 
 runs:
-  using: "composite"
+  using: composite
   steps:
-    - id: hadolint
-      run: |
-        echo -e "${BLUE}[ STEP - LINTING DOCKERFILE ] > Linting Dockerfile with Hadolint.${BLANK}"
-        echo -e "${CYAN}[ INFO ] > Hadolint version.${BLANK}"
-        hadolint --version
-        echo -e "${YELLOW}[ EXECUTING ] > Executing Dockerfile linting.${BLANK}"
+  - id: hadolint
+    run: |
+      echo -e "${BLUE}[ STEP - LINTING DOCKERFILE ] > Linting Dockerfile with Hadolint.${BLANK}"
+      echo -e "${CYAN}[ INFO ] > Hadolint version.${BLANK}"
+      hadolint --version
+      echo -e "${YELLOW}[ EXECUTING ] > Executing Dockerfile linting.${BLANK}"
 
-        if [[ ${{ inputs.format }} != "tty" || ${{ inputs.format }} != "checkstyle" ]]
-        then
-          hadolint -V ${{ inputs.working-dir }}/Dockerfile --format ${{ inputs.format }} \
-                                                           --failure-threshold ${{ inputs.treshold }} | jq -C
-        else
-          hadolint -V ${{ inputs.working-dir }}/Dockerfile --format ${{ inputs.format }} \
-                                                           --failure-threshold ${{ inputs.treshold }}
-        fi
+      if [[ ${{ inputs.format }} != "tty" || ${{ inputs.format }} != "checkstyle" ]]
+      then
+        hadolint -V ${{ inputs.working-dir }}/Dockerfile --format ${{ inputs.format }} \
+                                                         --failure-threshold ${{ inputs.treshold }} | jq -C
+      else
+        hadolint -V ${{ inputs.working-dir }}/Dockerfile --format ${{ inputs.format }} \
+                                                         --failure-threshold ${{ inputs.treshold }}
+      fi
 
-        EXIT_CODE="${PIPESTATUS[0]}"
-        if [[ ${EXIT_CODE} -ne 0 ]]
-        then
-          echo -e "${RED}[ FAIL ] > Hadolint scan failed on treshold '${{ inputs.treshold }}'${BLANK}"
-        else
-          echo -e "${GREEN}[ SUCCESS ] > Hadolint scan succeeded on treshold '${{ inputs.treshold }}'${BLANK}"
-        fi
-        exit ${EXIT_CODE}
-      shell: bash
-      env:
-        RED: \033[1;31m
-        GREEN: \033[1;32m
-        YELLOW: \033[1;33m
-        BLUE: \033[1;34m
-        PURPLE: \033[1;35m
-        CYAN: \033[1;36m
-        BLANK: \033[0m
+      EXIT_CODE="${PIPESTATUS[0]}"
+      if [[ ${EXIT_CODE} -ne 0 ]]
+      then
+        echo -e "${RED}[ FAIL ] > Hadolint scan failed on treshold '${{ inputs.treshold }}'${BLANK}"
+      else
+        echo -e "${GREEN}[ SUCCESS ] > Hadolint scan succeeded on treshold '${{ inputs.treshold }}'${BLANK}"
+      fi
+      exit ${EXIT_CODE}
+    shell: bash
+    env:
+      RED: \033[1;31m
+      GREEN: \033[1;32m
+      YELLOW: \033[1;33m
+      BLUE: \033[1;34m
+      PURPLE: \033[1;35m
+      CYAN: \033[1;36m
+      BLANK: \033[0m
